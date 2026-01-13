@@ -6,18 +6,15 @@ from models import db, Message
 class TestApp:
     '''Flask application in app.py'''
 
-    with app.app_context():
-        m = Message.query.filter(
-            Message.body == "Hello 👋"
-            ).filter(Message.username == "Liza")
-
-        for message in m:
-            db.session.delete(message)
-
-        db.session.commit()
-
     def test_has_correct_columns(self):
         with app.app_context():
+            # Clean up any existing test data
+            m = Message.query.filter(
+                Message.body == "Hello 👋"
+                ).filter(Message.username == "Liza")
+            for message in m:
+                db.session.delete(message)
+            db.session.commit()
 
             hello_from_liza = Message(
                 body="Hello 👋",
@@ -88,6 +85,13 @@ class TestApp:
     def test_updates_body_of_message_in_database(self):
         '''updates the body of a message in the database.'''
         with app.app_context():
+            # Create a test message first
+            test_message = Message(
+                body="Original message",
+                username="TestUser"
+            )
+            db.session.add(test_message)
+            db.session.commit()
 
             m = Message.query.first()
             id = m.id
@@ -110,6 +114,13 @@ class TestApp:
     def test_returns_data_for_updated_message_as_json(self):
         '''returns data for the updated message as JSON.'''
         with app.app_context():
+            # Create a test message first
+            test_message = Message(
+                body="Original message 2",
+                username="TestUser2"
+            )
+            db.session.add(test_message)
+            db.session.commit()
 
             m = Message.query.first()
             id = m.id

@@ -3,11 +3,14 @@
 import pytest
 from app import app, db
 
+# Create tables immediately when conftest is imported
+with app.app_context():
+    db.create_all()
+
 @pytest.fixture(scope='session', autouse=True)
 def setup_database():
+    yield
     with app.app_context():
-        db.create_all()
-        yield
         db.drop_all()
 
 def pytest_itemcollected(item):
